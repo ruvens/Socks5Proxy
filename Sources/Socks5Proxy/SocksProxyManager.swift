@@ -21,7 +21,7 @@ public class SocksProxyManager {
     
     private let streamProvider: SocksStreamProvider
     
-    init(streamProvider: SocksStreamProvider) throws {
+    public init(streamProvider: SocksStreamProvider) throws {
         self.streamProvider = streamProvider
         let tcpconfig: NWParameters = .tcp
         tcpconfig.acceptLocalOnly = true
