@@ -20,7 +20,7 @@ This simple Socks5 proxy server was written to access tcp traffic from macOS app
 
 Socks5Proxy uses SwiftPM as its build tool. If you want to depend on Socks5Proxy in your own project, it's as simple as adding a dependencies clause to your Package.swift:
 
-```
+```swift
 dependencies: [
     .package(url: "https://github.com/ruvens/Socks5Proxy.git", from: "0.1.0")
 ]
@@ -28,7 +28,7 @@ dependencies: [
 
 ### Usage
 
-```
+```swift
 import Socks5Proxy
 
 let streamProvider = EchoSocksStreamProvider()
