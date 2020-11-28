@@ -11,7 +11,7 @@ import os
 
 public class SocksProxyManager {
     
-    private let connectionLimit = 200
+    public var connectionLimit = 200
     
     private let listener: NWListener
     private var sockets: [UUID: SocksProxy] = [:]
