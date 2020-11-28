@@ -22,7 +22,7 @@ Socks5Proxy uses SwiftPM as its build tool. If you want to depend on Socks5Proxy
 
 ```
 dependencies: [
-    .package(url: "https://github.com/ruvens/Socks5Proxy.git", from: "0.0.0")
+    .package(url: "https://github.com/ruvens/Socks5Proxy.git", from: "0.1.0")
 ]
 ```
 

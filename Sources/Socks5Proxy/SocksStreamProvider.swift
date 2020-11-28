@@ -16,6 +16,8 @@ public protocol SocksStreamProvider {
 
 public class EchoSocksStreamProvider: SocksStreamProvider {
     
+    public init() { }
+    
     public func getSocksStreamsHandler(endpoint: NWEndpoint, relayDataHandler: @escaping  ((Data) -> Void), cancellationHandler: @escaping  (() -> Void)) -> SocksStreamHandler {
         return EchoSocksStreamHandler(endpoint: endpoint, relayDataHandler: relayDataHandler, cancellationHandler: cancellationHandler)
     }
