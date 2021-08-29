@@ -41,7 +41,7 @@ proxy.connectionLimit = 300 // default: 200
 The package is build around the following classes:
 - SocksProxyManager is the base class which starts the proxy upon initialization
 - SocksStreamProvider is a factory providing handlers (SocksStreamHandler) for proxy requests. 
-- SocksStreamHandler are responsible to connectting to the requested host and relaying data between this host and the SocksProxy
+- SocksStreamHandler are responsible to connecting to the requested host and relaying data between this host and the SocksProxy
 
 As default implementation an EchoSocksStreamProvider and an EchoSocksStreamHandler are provided within the package which purely relays the data unchanged between the SocksProxy and the requested external host.
 
