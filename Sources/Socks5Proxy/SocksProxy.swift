@@ -21,7 +21,7 @@ class SocksProxy {
     
     var notifyConnectionCancelled: ((UUID) -> Void)? = nil
     
-    private let logger = Logger(subsystem: "com.aurora.Arion", category: "SocksProxy")
+    private let logger = Logger(subsystem: "com.ruvens.Socks5Proxy", category: "SocksProxy")
     
     init(connection: NWConnection, streamProvider: SocksStreamProvider) {
         self.streamProvider = streamProvider

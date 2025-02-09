@@ -11,10 +11,7 @@ import os
 
 public protocol SocksStreamHandler {
     
-    init(endpoint: NWEndpoint, relayDataHandler: @escaping  ((Data) -> Void), cancellationHandler: @escaping  (() -> Void))
-    
     func start(completion: @escaping () -> Void)
-
     func relay(data: Data)
     func stop()
     
@@ -29,7 +26,7 @@ class EchoSocksStreamHandler: SocksStreamHandler {
     private let relayDataHandler: ((Data) -> Void)
     private var startReadyHandler: (() -> Void)? = nil
     
-    private let logger = Logger(subsystem: "com.aurora.Arion", category: "EchoSocksClient")
+    private let logger = Logger(subsystem: "com.ruvens.Socks5Proxy", category: "EchoSocksClient")
     
     required init(endpoint: NWEndpoint, relayDataHandler: @escaping ((Data) -> Void), cancellationHandler: @escaping (() -> Void)) {
         self.relayDataHandler = relayDataHandler

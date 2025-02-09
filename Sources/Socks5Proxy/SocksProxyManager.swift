@@ -17,7 +17,7 @@ public class SocksProxyManager {
     private var sockets: [UUID: SocksProxy] = [:]
     
     private let queue = DispatchQueue(label: "SocksProxyManager", qos: .userInitiated)
-    private let logger = Logger(subsystem: "com.aurora.Arion", category: "SocksProxyManager")
+    private let logger = Logger(subsystem: "com.ruvens.Socks5Proxy", category: "SocksProxyManager")
     
     private let streamProvider: SocksStreamProvider
     
