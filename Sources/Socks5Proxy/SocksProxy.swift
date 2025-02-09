@@ -11,7 +11,7 @@ import os
 
 class SocksProxy {
     
-    let id = UUID()
+    let id: UUID
     
     private let socket: NWConnection    
     private let queue = DispatchQueue(label: "SocksProxy", qos: .userInitiated)
@@ -19,12 +19,14 @@ class SocksProxy {
     private let protocolHandler = SocksProtocolHandler()
     private var client: SocksStreamHandler? = nil
     
-    var notifyConnectionCancelled: ((UUID) -> Void)? = nil
+    private let notifyConnectionCancelled: ((UUID) -> Void)
     
     private let logger = Logger(subsystem: "com.ruvens.Socks5Proxy", category: "SocksProxy")
     
-    init(connection: NWConnection, streamProvider: SocksStreamProvider) {
+    init(id: UUID, connection: NWConnection, streamProvider: SocksStreamProvider, notifyConnectionCancelled: @escaping ((UUID) -> Void)) {
+        self.id = id
         self.streamProvider = streamProvider
+        self.notifyConnectionCancelled = notifyConnectionCancelled
         socket = connection
         socket.stateUpdateHandler = { [weak self] state in
             switch state {
@@ -91,13 +93,15 @@ class SocksProxy {
         case .method(let response):
             send(data: response)
         case .request(let response, let endpoint):
-            client = streamProvider.getSocksStreamsHandler(endpoint: endpoint, relayDataHandler: { [weak self] data in
-                self?.send(data: data)
-            }, cancellationHandler: { [weak self] in
-                self?.cancel()
-            })
-            client?.start { [weak self] in
-                self?.send(data: response)
+            streamProvider.getSocksStreamsHandler(endpoint: endpoint) { handler in
+                self.client = handler
+                self.client?.cancellationHandler = { [weak self] in
+                    self?.cancel()
+                }
+                self.client?.relayDataHandler = { [weak self] data in
+                    self?.send(data: data)
+                }
+                self.send(data: response)
             }
         case .stream(let data):
             client?.relay(data: data)

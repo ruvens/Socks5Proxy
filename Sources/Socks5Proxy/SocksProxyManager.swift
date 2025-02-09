@@ -29,18 +29,20 @@ public class SocksProxyManager {
         listener.newConnectionHandler = handleNewConnection
         listener.newConnectionLimit = connectionLimit
         
-        print("SocksProxyManager: Socks5 Server started listening @localhost:1080")
+        logger.debug("SocksProxyManager: Socks5 Server started listening @localhost:1080")
         listener.start(queue: queue)
     }
     
     private func handleNewConnection(_ connection: NWConnection) {
         logger.debug("SocksyProxy Manager has \(self.sockets.count) active proxy connections")
-        let proxy = SocksProxy(connection: connection, streamProvider: streamProvider)
+        let newSocketID = UUID()
+        let proxy = SocksProxy(id: newSocketID, connection: connection, streamProvider: streamProvider, notifyConnectionCancelled: removeSocket)
         sockets[proxy.id] = proxy
-        proxy.notifyConnectionCancelled = { [weak self] id in
-            self?.sockets.removeValue(forKey: id)
-            self?.logger.debug("SocksProxyManager: Removed \(id). \(self!.sockets.count) active connections remaining")
-        }
         proxy.start()
+    }
+    
+    private func removeSocket(id: UUID) {
+        sockets.removeValue(forKey: id)
+        logger.debug("SocksProxyManager: Removed \(id). \(self.sockets.count) active connections remaining")
     }
 }

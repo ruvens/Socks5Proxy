@@ -10,6 +10,8 @@ import Network
 import os
 
 public protocol SocksStreamHandler {
+    var cancellationHandler: (() -> Void)? { get set }
+    var relayDataHandler: ((Data) -> Void)? { get set }
     
     func start(completion: @escaping () -> Void)
     func relay(data: Data)
@@ -22,16 +24,13 @@ class EchoSocksStreamHandler: SocksStreamHandler {
     private let socket: NWConnection
     private let queue = DispatchQueue(label: "EchoSocksClient", qos: .userInitiated)
     
-    private let cancellationHandler: (() -> Void)
-    private let relayDataHandler: ((Data) -> Void)
+    var cancellationHandler: (() -> Void)? = nil
+    var relayDataHandler: ((Data) -> Void)? = nil
     private var startReadyHandler: (() -> Void)? = nil
     
     private let logger = Logger(subsystem: "com.ruvens.Socks5Proxy", category: "EchoSocksClient")
     
-    required init(endpoint: NWEndpoint, relayDataHandler: @escaping ((Data) -> Void), cancellationHandler: @escaping (() -> Void)) {
-        self.relayDataHandler = relayDataHandler
-        self.cancellationHandler = cancellationHandler
-        
+    required init(endpoint: NWEndpoint) {
         let tcpconfig: NWParameters = .tcp
         tcpconfig.preferNoProxies = true
         socket = NWConnection(to: endpoint, using: tcpconfig)
@@ -48,7 +47,9 @@ class EchoSocksStreamHandler: SocksStreamHandler {
                 self?.logger.error("SocksProxy failed: \(error.localizedDescription)")
                 self?.socket.cancel()
             case .cancelled:
-                self?.cancellationHandler()
+                if let unwrappedCancellationHandler = self?.cancellationHandler {
+                    unwrappedCancellationHandler()
+                }
             default:
                 break
             }
@@ -71,8 +72,9 @@ class EchoSocksStreamHandler: SocksStreamHandler {
     private func receive() {
         socket.receive(minimumIncompleteLength: 1, maximumLength: 65536) {
             (data, _, isComplete, error) in
-            if let data = data, !data.isEmpty {
-                self.relayDataHandler(data)
+            if let data = data, !data.isEmpty,
+                let unwrappedRelayDataHandler = self.relayDataHandler {
+                 unwrappedRelayDataHandler(data)
                 if self.socket.state == .ready && !isComplete {
                     self.receive()
                 }
